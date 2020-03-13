@@ -18,9 +18,9 @@ spec:
       volumes:
         - name: secrets
           emptyDir: {}
-        - name: vault-tls
+        - name: vault-scripts
           secret:
-            secretName: vault-tls
+            secretName: vault-scripts
         - name: vault-token
           emptyDir:
             medium: Memory
@@ -38,8 +38,8 @@ spec:
           volumeMounts:
             - name: vault-token
               mountPath: /var/run/secrets/vaultproject.io
-            - name: vault-tls
-              mountPath: /etc/vault/tls
+            - name: vault-scripts
+              mountPath: /etc/vault/scripts
           env:
             - name: VAULT_ADDR
               valueFrom:
@@ -47,7 +47,7 @@ spec:
                   name: vault
                   key: vault_addr
             - name: VAULT_CACERT
-              value: /etc/vault/tls/ca.crt
+              value: /etc/vault/scripts/ca.crt
             - name: VAULT_ROLE
               value: myapp-role
 
@@ -60,8 +60,8 @@ spec:
           volumeMounts:
             - name: secrets
               mountPath: /etc/secrets
-            - name: vault-tls
-              mountPath: /etc/vault/tls
+            - name: vault-scripts
+              mountPath: /etc/vault/scripts
             - name: vault-token
               mountPath: /var/run/secrets/vaultproject.io
           env:
@@ -71,7 +71,7 @@ spec:
                   name: vault
                   key: vault_addr
             - name: VAULT_CACERT
-              value: /etc/vault/tls/ca.crt
+              value: /etc/vault/scripts/ca.crt
             - name: CT_LOCAL_CONFIG
               value: |
                 vault {

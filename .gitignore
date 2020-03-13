@@ -4,3 +4,6 @@
 **/.terraform
 **/*.tfstate
 **/*.tfstate.backup
+
+**/tls
+tls
