@@ -74,8 +74,8 @@ spec:
               cpu: "500m"
               memory: "256Mi"
           volumeMounts:
-            - name: vault-scripts
-              mountPath: /etc/vault/scripts
+            - name: vault-tls
+              mountPath: /etc/vault/tls
           env:
             - name: GCS_BUCKET_NAME
               valueFrom:
@@ -154,6 +154,6 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 5
       volumes:
-        - name: vault-scripts
+        - name: vault-tls
           secret:
-            secretName: vault-scripts
+            secretName: vault-tls
