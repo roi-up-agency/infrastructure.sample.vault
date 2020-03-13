@@ -5,58 +5,41 @@ provider "google" {
   project = var.project
   region  = var.region
   zone    = var.zone
+  batching {
+    enable_batching = false
+  }
 }
 
-//data "google_service_account" "vault_service_account" {
-//  project = var.project
-//  account_id = var.vault_service_account
-//}
-//
+#######################################
+############## IAM ####################
+#######################################
 resource "google_service_account" "vault_service_account"  {
   account_id   = var.vault_service_account_id
+  project = var.project
   display_name = "Vault service account"
 }
-
 
 resource "google_service_account_key" "vault_service_account_key" {
   service_account_id = google_service_account.vault_service_account.account_id
 }
 
-data "google_iam_policy" "vault_storage" {
-  binding {
-    role = "roles/storage.legacyBucketReader"
-    members = [
-      google_service_account_key.vault_service_account_key.id
-    ]
-  }
-  binding {
-    role = "roles/storage.objectAdmin"
-    members = [
-      google_service_account.vault_service_account.email
-    ]
-  }
-}
-
-resource "google_storage_bucket_iam_policy" "vault-storage" {
-  bucket = google_storage_bucket.vault-ha-storage.name
-  policy_data = data.google_iam_policy.vault_storage.policy_data
-}
-
-resource "google_kms_key_ring_iam_binding" "vault-init" {
-  key_ring_id = var.keyring_name
+resource "google_project_iam_binding" "vault-init" {
   members = [
-    google_service_account.vault_service_account.email
+    "serviceAccount:${google_service_account.vault_service_account.email}"
   ]
   role = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
 }
 
-resource "google_storage_bucket" "vault-ha-storage" {
-  name          = var.storage_name
-  location      = "EU"
-  force_destroy = true
-  bucket_policy_only = true
+resource "google_project_iam_binding" "vault-storage-admin" {
+  members = [
+    "serviceAccount:${google_service_account.vault_service_account.email}"
+  ]
+  role = "roles/storage.objectAdmin"
 }
 
+#######################################
+############## KMS ####################
+#######################################
 resource "google_kms_key_ring" "vault-keyring" {
   name     = var.keyring_name
   location = var.keyring_location
@@ -71,10 +54,27 @@ resource "google_kms_crypto_key" "vault-crypto-key" {
   }
 }
 
+
+#######################################
+############## GCE ####################
+#######################################
 resource "google_compute_address" "vault_static_ip" {
   name = "vault-static-ip"
 }
 
+#######################################
+############## GCP ####################
+#######################################
+resource "google_storage_bucket" "vault-ha-storage" {
+  name          = var.storage_name
+  location      = "EU"
+  force_destroy = true
+  bucket_policy_only = true
+}
+
+#######################################
+############## GKE ####################
+#######################################
 resource "google_container_cluster" "primary" {
   name     = var.cluster_name
   location = var.zone

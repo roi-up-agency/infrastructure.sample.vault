@@ -29,7 +29,7 @@ variable "keyring_name" {
 }
 
 variable "keyring_location" {
-  default = "vault-keyring"
+  default = "global"
 }
 
 variable "cryptokey_name" {
@@ -48,7 +48,7 @@ variable "zone" {
 }
 
 variable "machine_type" {
-  default = "n1-highcpu-1"
+  default = "n1-highcpu-2"
 }
 
 variable "number_nodes" {

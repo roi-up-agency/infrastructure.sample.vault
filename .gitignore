@@ -1,6 +1,6 @@
 .idea
-cert
+**/cert
 **/key.json
-**/.terraformter
+**/.terraform
 **/*.tfstate
 **/*.tfstate.backup
