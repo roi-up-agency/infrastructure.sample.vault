@@ -26,7 +26,7 @@ Generate the service account key in json format and copy it to **terraform/key.j
 
 
 ### Installation
-
+    
     # prep scripts
     $ sh scripts/enable-gcloud-apis.sh 
     
@@ -37,7 +37,16 @@ Generate the service account key in json format and copy it to **terraform/key.j
     $ terraform init
     $ terraform plan
     $ terraform apply
-    
-    
+        
     # generate certificates.
     $ sh scripts/vault-certificates.sh
+    
+    
+    
+### Post Installation
+
+
+**IMPORTANT:** 
+If you plan on keeping the data, make sure when you use terraform destroy you list out of the state the following resources:
+   
+    $ terraform state rm google_kms_crypto_key.vault-crypto-key google_kms_key_ring.vault-keyring google_storage_bucket.vault-ha-storage
